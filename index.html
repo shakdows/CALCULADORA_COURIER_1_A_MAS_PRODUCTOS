@@ -13,6 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
   :root {
@@ -27,97 +28,19 @@
   }
   * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
   body { background: #F1F5F9; }
-
-  .card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    border: 1px solid #E5E7EB;
-  }
-  .card-header {
-    background: var(--azul-oscuro);
-    color: white;
-    padding: 0.65rem 1rem;
-    border-radius: 12px 12px 0 0;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-  }
-
-  .input-edit {
-    background: var(--amarillo-input);
-    border: 1px solid var(--amarillo-border);
-    color: #1E3A8A;
-    font-weight: 500;
-    padding: 0.4rem 0.55rem;
-    border-radius: 6px;
-    width: 100%;
-    font-size: 0.875rem;
-    transition: all 0.15s;
-  }
-  .input-edit:focus {
-    outline: none;
-    border-color: var(--azul);
-    box-shadow: 0 0 0 3px rgba(46, 117, 182, 0.2);
-  }
+  .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid #E5E7EB; }
+  .card-header { background: var(--azul-oscuro); color: white; padding: 0.65rem 1rem; border-radius: 12px 12px 0 0; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em; }
+  .input-edit { background: var(--amarillo-input); border: 1px solid var(--amarillo-border); color: #1E3A8A; font-weight: 500; padding: 0.4rem 0.55rem; border-radius: 6px; width: 100%; font-size: 0.875rem; transition: all 0.15s; }
+  .input-edit:focus { outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px rgba(46, 117, 182, 0.2); }
   .input-edit:hover { background: #FFFBED; }
-
-  .cell-calc {
-    background: var(--gris-calc);
-    color: #1F2937;
-    padding: 0.4rem 0.55rem;
-    font-size: 0.875rem;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-  .cell-highlight {
-    background: #FEF3C7;
-    color: #78350F;
-    font-weight: 700;
-  }
-  .cell-pv {
-    background: #DCFCE7;
-    color: #065F46;
-    font-weight: 700;
-  }
-
+  .cell-calc { background: var(--gris-calc); color: #1F2937; padding: 0.4rem 0.55rem; font-size: 0.875rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .cell-highlight { background: #FEF3C7; color: #78350F; font-weight: 700; }
+  .cell-pv { background: #DCFCE7; color: #065F46; font-weight: 700; }
   table { border-collapse: collapse; width: 100%; }
-  table th {
-    background: var(--azul);
-    color: white;
-    padding: 0.55rem 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-align: center;
-    white-space: nowrap;
-    position: sticky;
-    top: 0;
-  }
-  table td {
-    border: 1px solid #E5E7EB;
-    padding: 0.15rem 0.2rem;
-  }
-
-  tr.total-row td {
-    background: var(--verde-total) !important;
-    font-weight: 700;
-    color: #14532D;
-  }
-
-  .btn {
-    padding: 0.55rem 1.1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: all 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    cursor: pointer;
-    border: none;
-  }
+  table th { background: var(--azul); color: white; padding: 0.55rem 0.5rem; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; white-space: nowrap; position: sticky; top: 0; }
+  table td { border: 1px solid #E5E7EB; padding: 0.15rem 0.2rem; }
+  tr.total-row td { background: var(--verde-total) !important; font-weight: 700; color: #14532D; }
+  .btn { padding: 0.55rem 1.1rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; border: none; }
   .btn-primary { background: var(--azul-oscuro); color: white; }
   .btn-primary:hover { background: #2A4A8B; transform: translateY(-1px); }
   .btn-success { background: #16A34A; color: white; }
@@ -128,99 +51,57 @@
   .btn-add:hover { background: var(--azul-oscuro); }
   .btn-ghost { background: #E5E7EB; color: #374151; }
   .btn-ghost:hover { background: #D1D5DB; }
-
-  .btn-icon-del {
-    background: transparent;
-    color: var(--rojo);
-    border: 1px solid #FCA5A5;
-    padding: 0.3rem 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: all 0.15s;
-  }
+  .btn-icon-del { background: transparent; color: var(--rojo); border: 1px solid #FCA5A5; padding: 0.3rem 0.5rem; border-radius: 6px; cursor: pointer; font-size: 0.75rem; transition: all 0.15s; }
   .btn-icon-del:hover { background: var(--rojo); color: white; }
-
-  .stat-big {
-    background: linear-gradient(135deg, var(--azul-oscuro), var(--azul));
-    color: white;
-    padding: 1.25rem;
-    border-radius: 10px;
-  }
+  .stat-big { background: linear-gradient(135deg, var(--azul-oscuro), var(--azul)); color: white; padding: 1.25rem; border-radius: 10px; }
   .stat-big .label { font-size: 0.75rem; text-transform: uppercase; opacity: 0.85; letter-spacing: 0.05em; }
   .stat-big .value { font-size: 1.85rem; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 0.25rem; }
-
   .field-group { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.75rem; padding: 0.4rem 0; }
   .field-label { font-size: 0.85rem; font-weight: 500; color: #374151; }
   .field-input-wrap { width: 130px; position: relative; }
-  .field-input-wrap .prefix, .field-input-wrap .suffix {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    font-size: 0.78rem; color: #6B7280; pointer-events: none;
-  }
+  .field-input-wrap .prefix, .field-input-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.78rem; color: #6B7280; pointer-events: none; }
   .field-input-wrap .prefix { left: 8px; }
   .field-input-wrap .suffix { right: 8px; }
   .field-input-wrap input.has-prefix { padding-left: 22px; }
   .field-input-wrap input.has-suffix { padding-right: 22px; }
-
-  .saved-indicator {
-    background: #DCFCE7;
-    color: #166534;
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-  .saved-indicator::before {
-    content: '';
-    width: 6px; height: 6px; border-radius: 999px;
-    background: #16A34A;
-  }
-
-  /* Tabla scroll horizontal limpio */
+  .sync-pill { padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; }
   .table-wrap { overflow-x: auto; border-radius: 8px; }
   .table-wrap::-webkit-scrollbar { height: 10px; }
   .table-wrap::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 5px; }
   .table-wrap::-webkit-scrollbar-thumb { background: #94A3B8; border-radius: 5px; }
   .table-wrap::-webkit-scrollbar-thumb:hover { background: var(--azul); }
-
   .col-edit-bg { background: var(--amarillo-input) !important; }
   .col-calc-bg { background: var(--gris-calc) !important; }
-
-  /* responsive */
-  @media (max-width: 768px) {
-    .stat-big .value { font-size: 1.4rem; }
-  }
+  @media (max-width: 768px) { .stat-big .value { font-size: 1.4rem; } }
 </style>
 </head>
 <body>
 
 <div class="max-w-[1600px] mx-auto p-4 md:p-8">
 
-  <!-- HEADER -->
   <header class="mb-6">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-slate-800">
-          Calculadora de Costos · Importación Courier
-        </h1>
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Calculadora de Costos · Importación Courier</h1>
         <p class="text-slate-500 mt-1">Peru Tractor S.R.L. · Multi-ítem con prorrateo automático</p>
       </div>
       <div class="flex items-center gap-3">
-        <span id="savedIndicator" class="saved-indicator" style="display:none;">Guardado</span>
-        <span class="text-xs text-slate-400">v1.0</span>
+        <span id="syncIndicator" class="sync-pill" style="background:#FEF3C7;color:#78350F;">
+          <span style="width:6px;height:6px;border-radius:99px;background:#D97706;display:inline-block;"></span>
+          Iniciando…
+        </span>
+        <span class="text-xs text-slate-400">v2.0</span>
       </div>
     </div>
   </header>
 
-  <!-- PARÁMETROS + COSTOS FIJOS -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
 
-    <!-- PARÁMETROS -->
     <div class="card">
-      <div class="card-header">PARÁMETROS GENERALES</div>
+      <div class="card-header flex items-center justify-between">
+        <span>PARÁMETROS GENERALES</span>
+        <span class="text-[10px] font-normal opacity-80">☁ se sincroniza en la nube</span>
+      </div>
       <div class="p-5">
         <div class="field-group">
           <span class="field-label">Tipo de cambio (S/ por USD)</span>
@@ -253,9 +134,11 @@
       </div>
     </div>
 
-    <!-- COSTOS FIJOS -->
     <div class="card">
-      <div class="card-header">COSTOS FIJOS DEL EMBARQUE (USD)</div>
+      <div class="card-header flex items-center justify-between">
+        <span>COSTOS FIJOS DEL EMBARQUE (USD)</span>
+        <span class="text-[10px] font-normal opacity-80">☁ se sincroniza en la nube</span>
+      </div>
       <div class="p-5">
         <div class="field-group">
           <span class="field-label">Recojo (pick up)</span>
@@ -290,10 +173,9 @@
 
   </div>
 
-  <!-- TABLA DE ITEMS -->
   <div class="card mb-5">
     <div class="card-header flex items-center justify-between">
-      <span>REPUESTOS DEL EMBARQUE</span>
+      <span>REPUESTOS DEL EMBARQUE <span class="text-[10px] font-normal opacity-80 ml-2">💾 se guarda solo en este dispositivo</span></span>
       <button onclick="addItem()" class="btn btn-add" style="background:#16A34A;">+ Agregar repuesto</button>
     </div>
     <div class="p-3">
@@ -334,22 +216,15 @@
     </div>
   </div>
 
-  <!-- RESUMEN COSTO TOTAL -->
   <div class="card mb-5">
     <div class="card-header">RESUMEN COSTO TOTAL DEL EMBARQUE</div>
     <div class="p-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-      <!-- Desglose -->
       <div class="lg:col-span-2">
         <h3 class="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wider">Desglose</h3>
         <table class="w-full text-sm">
-          <tbody id="resumenBody">
-            <!-- Filas generadas -->
-          </tbody>
+          <tbody id="resumenBody"></tbody>
         </table>
       </div>
-
-      <!-- Totales destacados -->
       <div class="flex flex-col gap-3">
         <div class="stat-big">
           <div class="label">Costo total embarque</div>
@@ -362,13 +237,11 @@
           <div class="text-sm opacity-90 mt-1" id="ventaSoles">S/ 0.00 (sin IGV)</div>
         </div>
       </div>
-
     </div>
-
     <div class="px-5 pb-5">
       <div class="text-xs text-slate-500 bg-slate-50 rounded p-3 border border-slate-200">
         <strong class="text-slate-700">Notas:</strong>
-        Los precios son sin IGV (a precio final del cliente se le agrega +18%).
+        Los precios son sin IGV (al cliente final se le agrega +18%).
         El IGV de importación es crédito fiscal, no entra al costo.
         Aplica para courier hasta FOB $1,999 (partida 9809.00.00.30).
         Prorrateo: flete por peso, recojo/gastos/seguro por valor FOB, Ad Valorem = % del FOB de cada ítem.
@@ -376,20 +249,10 @@
     </div>
   </div>
 
-  <!-- BOTONES DE ACCIÓN -->
   <div class="flex flex-wrap gap-3 justify-end mb-8">
-    <button onclick="exportExcel()" class="btn btn-success">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-      Descargar Excel
-    </button>
-    <button onclick="exportPDF()" class="btn btn-primary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-      Descargar PDF
-    </button>
-    <button onclick="resetAll()" class="btn btn-warn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-      Restablecer
-    </button>
+    <button onclick="exportExcel()" class="btn btn-success">⬇ Descargar Excel</button>
+    <button onclick="exportPDF()" class="btn btn-primary">⬇ Descargar PDF</button>
+    <button onclick="resetAll()" class="btn btn-warn">🗑 Restablecer</button>
   </div>
 
   <footer class="text-center text-xs text-slate-400 pb-6">
@@ -400,8 +263,16 @@
 </div>
 
 <script>
-// ============== CONFIG / ESTADO ==============
-const STORAGE_KEY = 'peruTractor_calcCourier_v1';
+// ╔══════════════════════════════════════════════════════════════╗
+// ║   CONFIGURACIÓN SUPABASE  (sincronización en la nube)        ║
+// ║   Reemplaza las dos líneas de abajo con tus credenciales.    ║
+// ║   Si las dejas vacías, la app funciona solo en local.        ║
+// ╚══════════════════════════════════════════════════════════════╝
+const SUPABASE_URL      = '';   // p.ej. 'https://abcdefghij.supabase.co'
+const SUPABASE_ANON_KEY = '';   // p.ej. 'eyJhbGciOiJI...'
+
+// ============== ESTADO ==============
+const STORAGE_KEY = 'peruTractor_calcCourier_v2';
 const fmtUSD = n => '$' + (n||0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmtSoles = n => 'S/ ' + (n||0).toLocaleString('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2});
 const fmtPct = n => ((n||0)*100).toFixed(2) + '%';
@@ -417,15 +288,35 @@ let state = {
   nextId: 3
 };
 
-let savedTimer;
-function showSaved() {
-  const el = document.getElementById('savedIndicator');
-  el.style.display = 'inline-flex';
-  clearTimeout(savedTimer);
-  savedTimer = setTimeout(() => el.style.display = 'none', 1500);
+// ============== SUPABASE CLIENT ==============
+let supabaseClient = null;
+let supabaseEnabled = false;
+if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseEnabled = true;
+  } catch(e) { console.warn('Supabase no inicializado:', e); }
 }
 
-function loadState() {
+let syncStatus = supabaseEnabled ? 'syncing' : 'local';
+function setSync(status) {
+  syncStatus = status;
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  const styles = {
+    local:   { bg:'#FEF3C7', color:'#78350F', text:'Solo local', dot:'#D97706' },
+    syncing: { bg:'#DBEAFE', color:'#1E3A8A', text:'Sincronizando…', dot:'#3B82F6' },
+    synced:  { bg:'#DCFCE7', color:'#166534', text:'En la nube', dot:'#16A34A' },
+    error:   { bg:'#FEE2E2', color:'#991B1B', text:'Error de sync', dot:'#DC2626' }
+  };
+  const s = styles[status];
+  el.style.background = s.bg;
+  el.style.color = s.color;
+  el.innerHTML = `<span style="width:6px;height:6px;border-radius:99px;background:${s.dot};display:inline-block;"></span> ${s.text}`;
+}
+
+// ============== PERSISTENCIA ==============
+function loadLocal() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -435,23 +326,85 @@ function loadState() {
         state.nextId = Math.max(0, ...state.items.map(i => i.id)) + 1;
       }
     }
-  } catch(e) { console.warn('Error cargando estado:', e); }
+  } catch(e) { console.warn('Error cargando local:', e); }
 }
-function saveState() {
+function saveLocal() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+async function loadFromCloud() {
+  if (!supabaseEnabled) return;
+  setSync('syncing');
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    showSaved();
-  } catch(e) { console.warn('Error guardando estado:', e); }
+    const { data, error } = await supabaseClient
+      .from('calculadora_config')
+      .select('*')
+      .eq('id', 'global')
+      .maybeSingle();
+    if (error) throw error;
+    if (data) {
+      state.params.tc      = Number(data.tc);
+      state.params.fleteKg = Number(data.flete_kg);
+      state.params.adVal   = Number(data.ad_val);
+      state.params.factor  = Number(data.factor);
+      state.costos.recojo  = Number(data.recojo);
+      state.costos.gastos  = Number(data.gastos);
+      state.costos.seguro  = Number(data.seguro);
+      saveLocal();
+      render();
+    } else {
+      await saveToCloud(true); // primera vez: crear el row
+    }
+    setSync('synced');
+  } catch(e) {
+    console.error('Error cargando de cloud:', e);
+    setSync('error');
+  }
+}
+
+let cloudDebounce;
+async function saveToCloud(immediate = false) {
+  if (!supabaseEnabled) return;
+  clearTimeout(cloudDebounce);
+  const doSave = async () => {
+    setSync('syncing');
+    try {
+      const payload = {
+        id: 'global',
+        tc: state.params.tc,
+        flete_kg: state.params.fleteKg,
+        ad_val: state.params.adVal,
+        factor: state.params.factor,
+        recojo: state.costos.recojo,
+        gastos: state.costos.gastos,
+        seguro: state.costos.seguro,
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await supabaseClient
+        .from('calculadora_config')
+        .upsert(payload, { onConflict: 'id' });
+      if (error) throw error;
+      setSync('synced');
+    } catch(e) {
+      console.error('Error guardando en cloud:', e);
+      setSync('error');
+    }
+  };
+  if (immediate) await doSave();
+  else cloudDebounce = setTimeout(doSave, 600);
+}
+
+function saveState({ syncCloud = false } = {}) {
+  saveLocal();
+  if (syncCloud) saveToCloud();
 }
 
 // ============== CÁLCULOS ==============
 function compute() {
   const items = state.items;
-  // Totales del embarque
   const fobTotal = items.reduce((s,i) => s + (i.cant||0) * (i.fob||0), 0);
   const pesoTotal = items.reduce((s,i) => s + (i.cant||0) * (i.peso||0), 0);
   const fleteTotal = pesoTotal * (state.params.fleteKg || 0);
-
   const recojo = state.costos.recojo || 0;
   const gastos = state.costos.gastos || 0;
   const seguro = state.costos.seguro || 0;
@@ -483,27 +436,30 @@ function compute() {
   return {
     rows, fobTotal, pesoTotal, fleteTotal, recojo, gastos, seguro,
     adValTotal, cifEmbarque,
-    costoTotalUSD: cifEmbarque, // FOB + flete + recojo + gastos + seguro + ad val (= CIF embarque)
+    costoTotalUSD: cifEmbarque,
     costoTotalSoles: cifEmbarque * tc,
     ventaUSD, ventaSoles: ventaUSD * tc
   };
 }
 
 // ============== RENDER ==============
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
 function render() {
-  // Sincronizar inputs editables con state
-  document.getElementById('paramTC').value = state.params.tc;
-  document.getElementById('paramFleteKg').value = state.params.fleteKg;
-  document.getElementById('paramAdVal').value = state.params.adVal;
-  document.getElementById('paramFactor').value = state.params.factor;
-  document.getElementById('costoRecojo').value = state.costos.recojo;
-  document.getElementById('costoGastos').value = state.costos.gastos;
-  document.getElementById('costoSeguro').value = state.costos.seguro;
+  document.getElementById('paramTC').value       = state.params.tc;
+  document.getElementById('paramFleteKg').value  = state.params.fleteKg;
+  document.getElementById('paramAdVal').value    = state.params.adVal;
+  document.getElementById('paramFactor').value   = state.params.factor;
+  document.getElementById('costoRecojo').value   = state.costos.recojo;
+  document.getElementById('costoGastos').value   = state.costos.gastos;
+  document.getElementById('costoSeguro').value   = state.costos.seguro;
 
   const c = compute();
   document.getElementById('fleteCalc').value = c.fleteTotal.toFixed(2);
 
-  // Tabla
   const tbody = document.getElementById('itemsTbody');
   tbody.innerHTML = c.rows.map((r, idx) => `
     <tr data-id="${r.id}">
@@ -530,24 +486,6 @@ function render() {
     </tr>
   `).join('');
 
-  // Totales en tfoot
-  document.getElementById('itemsTfoot').innerHTML = `
-    <tr class="total-row">
-      <td colspan="7" class="text-right">TOTALES →</td>
-      <td>${fmtUSD(c.fobTotal)}</td>
-      <td>${fmtNum(c.pesoTotal, 3)}</td>
-      <td>100.00%</td>
-      <td>${fmtUSD(c.fleteTotal)}</td>
-      <td>${fmtUSD(c.recojo)}</td>
-      <td>${fmtUSD(c.gastos)}</td>
-      <td>${fmtUSD(c.seguro)}</td>
-      <td>${fmtUSD(c.adValTotal)}</td>
-      <td>${fmtUSD(c.cifEmbarque)}</td>
-      <td>—</td><td>—</td><td>—</td><td></td>
-    </tr>
-  `;
-
-  // Enganchar listeners en inputs de items
   tbody.querySelectorAll('input').forEach(inp => {
     inp.addEventListener('input', e => {
       const tr = e.target.closest('tr');
@@ -555,48 +493,27 @@ function render() {
       const field = e.target.dataset.field;
       const item = state.items.find(i => i.id === id);
       if (item) {
-        if (['cant','peso','fob'].includes(field)) {
-          item[field] = parseFloat(e.target.value) || 0;
-        } else {
-          item[field] = e.target.value;
-        }
-        saveState();
-        renderLight(); // re-render parcial sin recrear inputs (preserva foco)
+        if (['cant','peso','fob'].includes(field)) item[field] = parseFloat(e.target.value) || 0;
+        else item[field] = e.target.value;
+        saveState({ syncCloud: false });
+        renderLight();
       }
     });
   });
 
-  // Resumen
-  document.getElementById('resumenBody').innerHTML = `
-    <tr><td class="py-1.5 text-slate-600">FOB total (proveedor)</td><td class="text-right font-semibold">${fmtUSD(c.fobTotal)}</td></tr>
-    <tr><td class="py-1.5 text-slate-600">Flete aéreo</td><td class="text-right font-semibold">${fmtUSD(c.fleteTotal)}</td></tr>
-    <tr><td class="py-1.5 text-slate-600">Recojo (pick up)</td><td class="text-right font-semibold">${fmtUSD(c.recojo)}</td></tr>
-    <tr><td class="py-1.5 text-slate-600">Gastos operativos</td><td class="text-right font-semibold">${fmtUSD(c.gastos)}</td></tr>
-    <tr><td class="py-1.5 text-slate-600">Seguro</td><td class="text-right font-semibold">${fmtUSD(c.seguro)}</td></tr>
-    <tr><td class="py-1.5 text-slate-600">Ad Valorem</td><td class="text-right font-semibold">${fmtUSD(c.adValTotal)}</td></tr>
-    <tr style="border-top: 2px solid #1F3864;"><td class="py-2 font-bold text-slate-800">Peso total embarque</td><td class="text-right font-bold">${fmtNum(c.pesoTotal, 3)} kg</td></tr>
-  `;
-
-  document.getElementById('totalUSD').textContent = fmtUSD(c.costoTotalUSD);
-  document.getElementById('totalSoles').textContent = fmtSoles(c.costoTotalSoles);
-  document.getElementById('ventaUSD').textContent = fmtUSD(c.ventaUSD);
-  document.getElementById('ventaSoles').textContent = fmtSoles(c.ventaSoles) + ' (sin IGV)';
+  renderTotalsAndSummary(c);
 }
 
-// Re-render rápido sin tocar el HTML de inputs (mantiene foco)
 function renderLight() {
   const c = compute();
   document.getElementById('fleteCalc').value = c.fleteTotal.toFixed(2);
-
-  // Actualizar solo las celdas calculadas de cada fila
-  c.rows.forEach((r, idx) => {
+  c.rows.forEach((r) => {
     const tr = document.querySelector(`tr[data-id="${r.id}"]`);
     if (!tr) return;
     const tds = tr.querySelectorAll('td');
-    // 0: #, 1-6: editables, 7-18: calculadas, 19: btn
-    tds[7].textContent = fmtUSD(r.fobIt);
-    tds[8].textContent = fmtNum(r.pesoIt, 3);
-    tds[9].textContent = fmtPct(r.pctFOB);
+    tds[7].textContent  = fmtUSD(r.fobIt);
+    tds[8].textContent  = fmtNum(r.pesoIt, 3);
+    tds[9].textContent  = fmtPct(r.pctFOB);
     tds[10].textContent = fmtUSD(r.fleteAsig);
     tds[11].textContent = fmtUSD(r.recojoAsig);
     tds[12].textContent = fmtUSD(r.gastosAsig);
@@ -607,8 +524,10 @@ function renderLight() {
     tds[17].textContent = fmtUSD(r.pvUSD);
     tds[18].textContent = fmtSoles(r.pvSoles);
   });
+  renderTotalsAndSummary(c);
+}
 
-  // Actualizar tfoot
+function renderTotalsAndSummary(c) {
   document.getElementById('itemsTfoot').innerHTML = `
     <tr class="total-row">
       <td colspan="7" class="text-right">TOTALES →</td>
@@ -624,8 +543,6 @@ function renderLight() {
       <td>—</td><td>—</td><td>—</td><td></td>
     </tr>
   `;
-
-  // Resumen y stats
   document.getElementById('resumenBody').innerHTML = `
     <tr><td class="py-1.5 text-slate-600">FOB total (proveedor)</td><td class="text-right font-semibold">${fmtUSD(c.fobTotal)}</td></tr>
     <tr><td class="py-1.5 text-slate-600">Flete aéreo</td><td class="text-right font-semibold">${fmtUSD(c.fleteTotal)}</td></tr>
@@ -641,42 +558,28 @@ function renderLight() {
   document.getElementById('ventaSoles').textContent = fmtSoles(c.ventaSoles) + ' (sin IGV)';
 }
 
-function escapeHtml(str) {
-  if (str === null || str === undefined) return '';
-  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
 // ============== ACCIONES ==============
 function addItem() {
-  state.items.push({
-    id: state.nextId++,
-    desc: '', partNo: '', cant: 1, peso: 0, fob: 0, notas: ''
-  });
-  saveState();
+  state.items.push({ id: state.nextId++, desc: '', partNo: '', cant: 1, peso: 0, fob: 0, notas: '' });
+  saveState({ syncCloud: false });
   render();
 }
 function removeItem(id) {
-  if (state.items.length <= 1) {
-    alert('Debe haber al menos un repuesto en la tabla.');
-    return;
-  }
+  if (state.items.length <= 1) { alert('Debe haber al menos un repuesto en la tabla.'); return; }
   if (!confirm('¿Eliminar este repuesto?')) return;
   state.items = state.items.filter(i => i.id !== id);
-  saveState();
+  saveState({ syncCloud: false });
   render();
 }
 function resetAll() {
-  if (!confirm('¿Restablecer todo a valores por defecto? Se perderán los datos actuales.')) return;
-  localStorage.removeItem(STORAGE_KEY);
+  if (!confirm('¿Restablecer todo a valores por defecto?\n(Si tienes Supabase configurado, los parámetros también se restablecen en la nube)')) return;
   state = {
     params: { tc: 3.379, fleteKg: 7, adVal: 4, factor: 1.4 },
     costos: { recojo: 25, gastos: 30, seguro: 0 },
-    items: [
-      { id: 1, desc: '', partNo: '', cant: 1, peso: 0, fob: 0, notas: '' }
-    ],
+    items: [{ id: 1, desc: '', partNo: '', cant: 1, peso: 0, fob: 0, notas: '' }],
     nextId: 2
   };
-  saveState();
+  saveState({ syncCloud: true });
   render();
 }
 
@@ -684,8 +587,6 @@ function resetAll() {
 function exportExcel() {
   const c = compute();
   const wb = XLSX.utils.book_new();
-
-  // Hoja: Resumen + Items
   const aoa = [];
   aoa.push(['CALCULADORA DE COSTOS · IMPORTACIÓN COURIER']);
   aoa.push(['Peru Tractor S.R.L.', '', '', '', 'Generado:', new Date().toLocaleString('es-PE')]);
@@ -703,23 +604,11 @@ function exportExcel() {
   aoa.push(['Flete total (auto)', c.fleteTotal]);
   aoa.push([]);
   aoa.push(['REPUESTOS DEL EMBARQUE']);
-  aoa.push(['#','Descripción','Part No','Cant','Peso unit (kg)','FOB unit USD','Notas',
-            'FOB total','Peso total','% FOB','Flete asig','Recojo asig','Gastos asig','Seguro asig','Ad Val','CIF total','CIF unit','P.Venta USD','P.Venta S/']);
+  aoa.push(['#','Descripción','Part No','Cant','Peso unit (kg)','FOB unit USD','Notas','FOB total','Peso total','% FOB','Flete asig','Recojo asig','Gastos asig','Seguro asig','Ad Val','CIF total','CIF unit','P.Venta USD','P.Venta S/']);
   c.rows.forEach((r, idx) => {
-    aoa.push([
-      idx+1, r.desc, r.partNo, r.cant, r.peso, r.fob, r.notas || '',
-      r.fobIt, r.pesoIt, r.pctFOB,
-      r.fleteAsig, r.recojoAsig, r.gastosAsig, r.seguroAsig, r.adValAsig,
-      r.cifTotal, r.cifUnit, r.pvUSD, r.pvSoles
-    ]);
+    aoa.push([idx+1, r.desc, r.partNo, r.cant, r.peso, r.fob, r.notas || '', r.fobIt, r.pesoIt, r.pctFOB, r.fleteAsig, r.recojoAsig, r.gastosAsig, r.seguroAsig, r.adValAsig, r.cifTotal, r.cifUnit, r.pvUSD, r.pvSoles]);
   });
-  // Totales
-  aoa.push([
-    '', 'TOTAL', '', c.rows.reduce((s,r)=>s+r.cant,0), '', '', '',
-    c.fobTotal, c.pesoTotal, 1,
-    c.fleteTotal, c.recojo, c.gastos, c.seguro, c.adValTotal,
-    c.cifEmbarque, '', '', ''
-  ]);
+  aoa.push(['', 'TOTAL', '', c.rows.reduce((s,r)=>s+r.cant,0), '', '', '', c.fobTotal, c.pesoTotal, 1, c.fleteTotal, c.recojo, c.gastos, c.seguro, c.adValTotal, c.cifEmbarque, '', '', '']);
   aoa.push([]);
   aoa.push(['RESUMEN COSTO TOTAL EMBARQUE']);
   aoa.push(['Costo total USD', c.costoTotalUSD]);
@@ -728,14 +617,8 @@ function exportExcel() {
   aoa.push(['Venta total estimada S/ (sin IGV)', c.ventaSoles]);
 
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  // Anchos
-  ws['!cols'] = [
-    {wch:4},{wch:30},{wch:12},{wch:6},{wch:13},{wch:13},{wch:18},
-    {wch:12},{wch:11},{wch:8},{wch:12},{wch:12},{wch:12},{wch:12},
-    {wch:11},{wch:12},{wch:12},{wch:14},{wch:14}
-  ];
+  ws['!cols'] = [{wch:4},{wch:30},{wch:12},{wch:6},{wch:13},{wch:13},{wch:18},{wch:12},{wch:11},{wch:8},{wch:12},{wch:12},{wch:12},{wch:12},{wch:11},{wch:12},{wch:12},{wch:14},{wch:14}];
   XLSX.utils.book_append_sheet(wb, ws, 'Costeo Courier');
-
   const fecha = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `Costeo_Courier_PeruTractor_${fecha}.xlsx`);
 }
@@ -745,175 +628,78 @@ function exportPDF() {
   const c = compute();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-  // Header
   doc.setFillColor(31, 56, 100);
   doc.rect(0, 0, 297, 18, 'F');
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold');
   doc.text('CALCULADORA DE COSTOS · IMPORTACIÓN COURIER', 10, 11);
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
   doc.text(`Peru Tractor S.R.L.  |  ${new Date().toLocaleString('es-PE')}`, 10, 16);
-
   doc.setTextColor(0, 0, 0);
   let y = 24;
-
-  // Parámetros y costos en 2 columnas
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10); doc.setFont('helvetica', 'bold');
   doc.text('Parámetros generales', 10, y);
   doc.text('Costos fijos del embarque', 150, y);
   y += 5;
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  const params = [
-    ['T.C. (S/ por USD):', state.params.tc.toFixed(4)],
-    ['Flete USD/kg:', '$' + state.params.fleteKg.toFixed(2)],
-    ['Ad Valorem:', state.params.adVal + '%'],
-    ['Factor de venta:', '×' + state.params.factor.toFixed(2)],
-  ];
-  const costos = [
-    ['Recojo:', fmtUSD(state.costos.recojo)],
-    ['Gastos operativos:', fmtUSD(state.costos.gastos)],
-    ['Seguro:', fmtUSD(state.costos.seguro)],
-    ['Flete total (auto):', fmtUSD(c.fleteTotal)],
-  ];
-  params.forEach(([k,v], i) => {
-    doc.text(k, 10, y + i*4.5);
-    doc.text(v, 70, y + i*4.5, { align: 'right' });
-  });
-  costos.forEach(([k,v], i) => {
-    doc.text(k, 150, y + i*4.5);
-    doc.text(v, 220, y + i*4.5, { align: 'right' });
-  });
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  const params = [['T.C. (S/ por USD):', state.params.tc.toFixed(4)],['Flete USD/kg:', '$' + state.params.fleteKg.toFixed(2)],['Ad Valorem:', state.params.adVal + '%'],['Factor de venta:', '×' + state.params.factor.toFixed(2)]];
+  const costos = [['Recojo:', fmtUSD(state.costos.recojo)],['Gastos operativos:', fmtUSD(state.costos.gastos)],['Seguro:', fmtUSD(state.costos.seguro)],['Flete total (auto):', fmtUSD(c.fleteTotal)]];
+  params.forEach(([k,v], i) => { doc.text(k, 10, y + i*4.5); doc.text(v, 70, y + i*4.5, { align: 'right' }); });
+  costos.forEach(([k,v], i) => { doc.text(k, 150, y + i*4.5); doc.text(v, 220, y + i*4.5, { align: 'right' }); });
   y += 22;
-
-  // Tabla de items
-  const headers = [
-    ['#','Descripción','Part No','Cant','Peso\n(kg)','FOB unit\nUSD','FOB total','% FOB','Flete\nasig','Recojo\nasig','Gastos\nasig','Ad Val','CIF total','CIF unit','P.Venta\nUSD','P.Venta\nS/']
-  ];
-  const body = c.rows.map((r, idx) => [
-    idx+1, r.desc, r.partNo, r.cant,
-    fmtNum(r.peso, 3),
-    '$' + r.fob.toFixed(2),
-    '$' + r.fobIt.toFixed(2),
-    fmtPct(r.pctFOB),
-    '$' + r.fleteAsig.toFixed(2),
-    '$' + r.recojoAsig.toFixed(2),
-    '$' + r.gastosAsig.toFixed(2),
-    '$' + r.adValAsig.toFixed(2),
-    '$' + r.cifTotal.toFixed(2),
-    '$' + r.cifUnit.toFixed(2),
-    '$' + r.pvUSD.toFixed(2),
-    'S/ ' + r.pvSoles.toFixed(2),
-  ]);
-  // Fila total
-  body.push([
-    '', 'TOTAL', '',
-    c.rows.reduce((s,r)=>s+r.cant,0),
-    fmtNum(c.pesoTotal, 3),
-    '',
-    '$' + c.fobTotal.toFixed(2),
-    '100.00%',
-    '$' + c.fleteTotal.toFixed(2),
-    '$' + c.recojo.toFixed(2),
-    '$' + c.gastos.toFixed(2),
-    '$' + c.adValTotal.toFixed(2),
-    '$' + c.cifEmbarque.toFixed(2),
-    '—','—','—'
-  ]);
-
+  const headers = [['#','Descripción','Part No','Cant','Peso\n(kg)','FOB unit\nUSD','FOB total','% FOB','Flete\nasig','Recojo\nasig','Gastos\nasig','Ad Val','CIF total','CIF unit','P.Venta\nUSD','P.Venta\nS/']];
+  const body = c.rows.map((r, idx) => [idx+1, r.desc, r.partNo, r.cant, fmtNum(r.peso, 3), '$' + r.fob.toFixed(2), '$' + r.fobIt.toFixed(2), fmtPct(r.pctFOB), '$' + r.fleteAsig.toFixed(2), '$' + r.recojoAsig.toFixed(2), '$' + r.gastosAsig.toFixed(2), '$' + r.adValAsig.toFixed(2), '$' + r.cifTotal.toFixed(2), '$' + r.cifUnit.toFixed(2), '$' + r.pvUSD.toFixed(2), 'S/ ' + r.pvSoles.toFixed(2)]);
+  body.push(['', 'TOTAL', '', c.rows.reduce((s,r)=>s+r.cant,0), fmtNum(c.pesoTotal, 3), '', '$' + c.fobTotal.toFixed(2), '100.00%', '$' + c.fleteTotal.toFixed(2), '$' + c.recojo.toFixed(2), '$' + c.gastos.toFixed(2), '$' + c.adValTotal.toFixed(2), '$' + c.cifEmbarque.toFixed(2), '—','—','—']);
   doc.autoTable({
-    startY: y,
-    head: headers,
-    body: body,
-    theme: 'grid',
+    startY: y, head: headers, body: body, theme: 'grid',
     styles: { fontSize: 7, cellPadding: 1.4, overflow: 'linebreak' },
     headStyles: { fillColor: [46, 117, 182], textColor: 255, fontStyle: 'bold', fontSize: 7 },
-    columnStyles: {
-      0: { halign: 'center', cellWidth: 7 },
-      1: { cellWidth: 32 },
-      2: { cellWidth: 16 },
-      3: { halign: 'center', cellWidth: 9 },
-      4: { halign: 'right', cellWidth: 14 },
-      5: { halign: 'right', cellWidth: 16 },
-      6: { halign: 'right', cellWidth: 16 },
-      7: { halign: 'right', cellWidth: 13 },
-      8: { halign: 'right', cellWidth: 15 },
-      9: { halign: 'right', cellWidth: 15 },
-      10: { halign: 'right', cellWidth: 15 },
-      11: { halign: 'right', cellWidth: 14 },
-      12: { halign: 'right', cellWidth: 17 },
-      13: { halign: 'right', cellWidth: 17 },
-      14: { halign: 'right', cellWidth: 17 },
-      15: { halign: 'right', cellWidth: 18 },
-    },
-    didParseCell: function (data) {
-      if (data.row.index === body.length - 1) {
-        data.cell.styles.fillColor = [198, 224, 180];
-        data.cell.styles.fontStyle = 'bold';
-      }
-    }
+    columnStyles: { 0:{halign:'center',cellWidth:7}, 1:{cellWidth:32}, 2:{cellWidth:16}, 3:{halign:'center',cellWidth:9}, 4:{halign:'right',cellWidth:14}, 5:{halign:'right',cellWidth:16}, 6:{halign:'right',cellWidth:16}, 7:{halign:'right',cellWidth:13}, 8:{halign:'right',cellWidth:15}, 9:{halign:'right',cellWidth:15}, 10:{halign:'right',cellWidth:15}, 11:{halign:'right',cellWidth:14}, 12:{halign:'right',cellWidth:17}, 13:{halign:'right',cellWidth:17}, 14:{halign:'right',cellWidth:17}, 15:{halign:'right',cellWidth:18} },
+    didParseCell: (data) => { if (data.row.index === body.length - 1) { data.cell.styles.fillColor = [198, 224, 180]; data.cell.styles.fontStyle = 'bold'; } }
   });
-
   let yEnd = doc.lastAutoTable.finalY + 8;
-
-  // Resumen final
-  doc.setFillColor(31, 56, 100);
-  doc.rect(10, yEnd, 277, 8, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(31, 56, 100); doc.rect(10, yEnd, 277, 8, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont('helvetica', 'bold');
   doc.text('RESUMEN COSTO TOTAL DEL EMBARQUE', 12, yEnd + 5.5);
-  yEnd += 12;
-
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(11);
+  yEnd += 12; doc.setTextColor(0, 0, 0); doc.setFontSize(11);
   doc.text(`Costo total USD: ${fmtUSD(c.costoTotalUSD)}`, 12, yEnd);
   doc.text(`Costo total S/: ${fmtSoles(c.costoTotalSoles)}`, 110, yEnd);
-  yEnd += 6;
-  doc.setTextColor(6, 95, 70);
+  yEnd += 6; doc.setTextColor(6, 95, 70);
   doc.text(`Venta estimada USD: ${fmtUSD(c.ventaUSD)}`, 12, yEnd);
   doc.text(`Venta estimada S/: ${fmtSoles(c.ventaSoles)} (sin IGV)`, 110, yEnd);
-
-  // Notas
-  yEnd += 8;
-  doc.setTextColor(100, 100, 100);
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'italic');
+  yEnd += 8; doc.setTextColor(100, 100, 100); doc.setFontSize(7); doc.setFont('helvetica', 'italic');
   doc.text('Precios sin IGV. El IGV de importación es crédito fiscal (no costo). Aplica para courier hasta FOB $1,999 (partida 9809.00.00.30).', 12, yEnd);
   doc.text('Prorrateo: flete por peso, recojo/gastos/seguro por valor FOB, Ad Valorem = % del FOB de cada ítem.', 12, yEnd + 3.5);
-
   const fecha = new Date().toISOString().slice(0,10);
   doc.save(`Costeo_Courier_PeruTractor_${fecha}.pdf`);
 }
 
-// ============== EVENTOS DE INPUTS GLOBALES ==============
+// ============== LISTENERS DE PARÁMETROS Y COSTOS (sync nube) ==============
 function attachParamListeners() {
   const map = [
-    ['paramTC', 'params', 'tc'],
+    ['paramTC',      'params', 'tc'],
     ['paramFleteKg', 'params', 'fleteKg'],
-    ['paramAdVal', 'params', 'adVal'],
-    ['paramFactor', 'params', 'factor'],
-    ['costoRecojo', 'costos', 'recojo'],
-    ['costoGastos', 'costos', 'gastos'],
-    ['costoSeguro', 'costos', 'seguro'],
+    ['paramAdVal',   'params', 'adVal'],
+    ['paramFactor',  'params', 'factor'],
+    ['costoRecojo',  'costos', 'recojo'],
+    ['costoGastos',  'costos', 'gastos'],
+    ['costoSeguro',  'costos', 'seguro'],
   ];
   map.forEach(([id, group, key]) => {
     document.getElementById(id).addEventListener('input', (e) => {
       state[group][key] = parseFloat(e.target.value) || 0;
-      saveState();
+      saveState({ syncCloud: true }); // estos SÍ se sincronizan a la nube
       renderLight();
     });
   });
 }
 
 // ============== INIT ==============
-loadState();
-render();
+loadLocal();         // 1) carga instantánea desde el navegador
+render();            // 2) muestra los datos locales
 attachParamListeners();
+setSync(supabaseEnabled ? 'syncing' : 'local');
+loadFromCloud();     // 3) sobrescribe con la versión de la nube
 </script>
 
 </body>
